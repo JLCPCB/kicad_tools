@@ -488,20 +488,16 @@ class UnicodeWriter:
     def __init__(self, file, *a, **kw):
         self.file = file
     def writerow(self, data):
-        for e in data:
-            self.file.write(u'"')
-            #print isinstance(e, unicode)
-            if not isinstance(e, unicode):
-                self.file.write(unicode(e))
-            else:
-                self.file.write(e)
-            self.file.write(u'",')
-        self.file.write(u'\n')
+        fields = []
+        for value in data:
+            escaped = unicode(value).replace(u'"', u'""')
+            fields.append(u'"' + escaped + u'"')
+        self.file.write(u','.join(fields) + u'\n')
     
 
 def OpenCSV(fileName):
     try:
-        f = io.open(fileName, 'w+', encoding="utf-8")
+        f = io.open(fileName, 'w+', encoding="utf-8", newline='')
     except IOError:
         e = "Can't open output file for writing: " + fileName
         print( __file__, ":", e, sys.stderr )
