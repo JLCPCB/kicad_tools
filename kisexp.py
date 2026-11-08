@@ -12,6 +12,7 @@ QUOTE = {
 BRACKETS = {'(': ')'}
 BRACKETS_END = {')':1}
 SPACE = {' ':1, '\t':1, '\r':1, '\n':1}
+STRING_ESCAPES = {'\\': '\\', 'n': '\n', 'r': '\r'}
 
 def quoteData(content, index):
     data = ""
@@ -21,15 +22,14 @@ def quoteData(content, index):
     index+=1;
     while index < c_len:
         c = content[index]
-        if c == '\\':
+        if escape:
+            data += STRING_ESCAPES.get(c, c)
+            escape = False
+        elif c == '\\':
             escape = True
         elif c == q_e:
-            if(not escape):
-                return data, index+1
-            else:
-                data += c;
+            return data, index+1
         else:
-            escape = False
             data += c
         index+=1
     return data, index+1
